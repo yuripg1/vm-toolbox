@@ -1,8 +1,10 @@
 # OpenClaw
 
+## VM creation
+
 First of all, we need to have the `ubuntu-24.04.4-live-server-amd64.iso` image in the `openclaw` directory.
 
-Secondly, a distinction of commands to be executed in the host and the guest is done by using `[Host]` and `[Guest]` prefixes and indentation.
+Secondly, a distinction of commands to be executed in the host and the guest is done by using `[Host]` and `[OpenClaw-VM]` prefixes and indentation.
 
 Then, from the `openclaw` directory, run the commands below to create the VM and boot it up:
 
@@ -29,6 +31,8 @@ Then, you can continue with the reboot of the OS, but when it boots up again we 
 [Host]$ ./openclaw_shutdown_vm.sh
 ```
 
+## OS configuration
+
 After shutting down the VM, we'll start it again but this time with no graphical interface by running the commands below:
 
 ```shell
@@ -39,17 +43,17 @@ Once the VM has booted up, we can then prepare the VM before installing OpenClaw
 
 ```shell
 [Host]$ ./openclaw_connect_via_ssh.sh
-  [Guest]$ sudo apt update && sudo apt -y dist-upgrade
-  [Guest]$ sudo apt -y install build-essential
-  [Guest]$ curl -O https://nodejs.org/dist/v24.14.1/node-v24.14.1-linux-x64.tar.xz
-  [Guest]$ tar -xf ./node-v24.14.1-linux-x64.tar.xz
-  [Guest]$ sudo mv ./node-v24.14.1-linux-x64 /opt/node
-  [Guest]$ sudo ln -s /opt/node/bin/node /usr/local/bin/node
-  [Guest]$ sudo ln -s /opt/node/bin/npm /usr/local/bin/npm
-  [Guest]$ rm -f ./node-v24.14.1-linux-x64.tar.xz
-  [Guest]$ sudo ufw allow 22
-  [Guest]$ sudo ufw enable
-  [Guest]$ nano ~/.bashrc
+  [OpenClaw-VM]$ sudo apt update && sudo apt -y dist-upgrade
+  [OpenClaw-VM]$ sudo apt -y install build-essential
+  [OpenClaw-VM]$ curl -O https://nodejs.org/dist/v24.14.1/node-v24.14.1-linux-x64.tar.xz
+  [OpenClaw-VM]$ tar -xf ./node-v24.14.1-linux-x64.tar.xz
+  [OpenClaw-VM]$ sudo mv ./node-v24.14.1-linux-x64 /opt/node
+  [OpenClaw-VM]$ sudo ln -s /opt/node/bin/node /usr/local/bin/node
+  [OpenClaw-VM]$ sudo ln -s /opt/node/bin/npm /usr/local/bin/npm
+  [OpenClaw-VM]$ rm -f ./node-v24.14.1-linux-x64.tar.xz
+  [OpenClaw-VM]$ sudo ufw allow 22
+  [OpenClaw-VM]$ sudo ufw enable
+  [OpenClaw-VM]$ nano ~/.bashrc
 ```
 
 Add the following line at the end of the `.bashrc` file in the guest:
@@ -61,9 +65,11 @@ export PATH="/opt/node/bin:$PATH"
 After that, we reboot the OS by running the commands below:
 
 ```shell
-  [Guest]$ exit
+  [OpenClaw-VM]$ exit
 [Host]$ ./openclaw_reboot_vm.sh
 ```
+
+## OpenClaw installation
 
 After the OS has booted up again, we can finally go for the installation of OpenClaw with the command below:
 
@@ -74,17 +80,60 @@ After the OS has booted up again, we can finally go for the installation of Open
 Right after installing OpenClaw, we already have a device to approve. Run the command below:
 
 ```shell
-[Guest]$ openclaw devices list
+[OpenClaw-VM]$ openclaw devices list
 ```
 
 Next, we replace the `<Request>` and run the command below:
 
 ```shell
-$ openclaw devices approve <Request>
+[OpenClaw-VM]$ openclaw devices approve <Request>
+```
+
+## Telegram pairing
+
+After you've created a Telegram bot and configured it in OpenClaw (this manual does not go over those steps), you'll want to initiate a conversation with the bot. Upon receiving the first message in Telegram, OpenClaw will require a "pairing" process. Run the command below to see your pending pairings:
+
+```shell
+[OpenClaw-VM]$ openclaw pairing list
+```
+
+Take note of the Telegram user ID that appears in the output because we will need it later on.
+
+Now, replace the `<Code>` and run the command below to approve the pairing:
+
+```shell
+[OpenClaw-VM]$ openclaw pairing approve <Code>
+```
+
+## Telegram configuration
+
+Now we need to tweak the Telegram integration so that OpenClaw prompts us when it needs approval for running commands (and also another change to stop the streaming of partial messages in Telegram).
+
+Run the command below to edit `openclaw.json`:
+
+```shell
+[OpenClaw-VM]$ nano ~/.openclaw/openclaw.json
+```
+
+Inside `"channels"."telegram"`, add the following values (replacing `<TelegramUserID>`):
+
+```
+"streaming": "off",
+"execApprovals": {
+  "enabled": true,
+  "target": "channel",
+  "approvers": ["<TelegramUserID>"]
+}
+```
+
+Then, we'll need to restart OpenClaw Gateway with the following command:
+
+```shell
+[OpenClaw-VM]$ openclaw gateway restart
 ```
 
 ---
 
-Note 1: The steps described here assume that you've already installed the virtualization stack. If you haven't, please refer to **[KVM + QEMU + libvirt](../../README.md)**.
+Note 1: The steps described here assume that you've already installed the virtualization stack. If you haven't, please refer to **[KVM + QEMU + libvirt](../../)**.
 
-Note 2: The steps described here assume that you've already configured a dedicated network for the VMs. If you haven't, please refer to **[VMs network](../README.md)**.
+Note 2: The steps described here assume that you've already configured a dedicated network for the VMs. If you haven't, please refer to **[VMs network](../)**.
