@@ -11,8 +11,10 @@ $ sudo apt -y install wireshark
 
 When asked `Should non-superusers be able to capture packets?`, answer `Yes`.
 
-Then continue on with the command below:
+After the installation is done, add your user to the `wireshark` group by running the command below:
 
 ```shell
 $ sudo usermod -aG wireshark $USER
 ```
+
+After that, log out and log back in for the new group membership to take effect.

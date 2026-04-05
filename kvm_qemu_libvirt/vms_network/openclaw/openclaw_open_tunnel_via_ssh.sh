@@ -1,4 +1,5 @@
-USERNAME="yuri"
-IP_ADDRESS="192.168.169.253"
+#!/usr/bin/env bash
+set -eu -o pipefail
+source ./config.sh
 
-ssh -N -L 18789:127.0.0.1:18789 -p 22 ${USERNAME}@${IP_ADDRESS}
+ssh -N -L 18789:127.0.0.1:18789 -p 22 ${VM_USERNAME}@${IP_ADDRESS}

@@ -1,11 +1,16 @@
 # KVM + QEMU + libvirt
 
-Run the commands below:
+We start by checking if KVM acceleration can be used by running the commands below:
 
 ```shell
 $ sudo apt update
 $ sudo apt -y install cpu-checker
 $ kvm-ok
+```
+
+Then we proceed to installing and configuring the virtualization components by running the commands below:
+
+```shell
 $ sudo apt -y install bridge-utils libvirt-daemon-system qemu-kvm virt-manager virt-viewer
 $ sudo usermod -aG kvm,libvirt $USER
 ```
