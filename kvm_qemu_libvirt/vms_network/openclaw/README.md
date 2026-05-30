@@ -4,9 +4,11 @@
 
 First of all, we need to have the `ubuntu-24.04.4-live-server-amd64.iso` image in the `openclaw` directory.
 
+Before running any of the scripts, review and edit `config.sh` as needed (e.g., set `VM_USERNAME` to your own username, adjust `VM_MEMORY_MB`, `DISK_SIZE`, etc.).
+
 Secondly, a distinction of commands to be executed in the host and the guest is done by using `[Host]$` and `[OpenClaw-VM]$` prefixes and also indentation.
 
-Given this context, and from the `openclaw` directory, run the commands below to create the VM and boot it up:
+From the `openclaw` directory, run the commands below to create the VM and boot it up:
 
 ```shell
 [Host]$ bash ./openclaw_create_vm.sh
@@ -65,7 +67,7 @@ Right after installing OpenClaw, we already have a device to approve. Run the co
 [OpenClaw-VM]$ openclaw devices list
 ```
 
-Next, we replace the `<Request>` and run the command below:
+Next, replace `<Request>` with the device ID from the output and run the command below:
 
 ```shell
 [OpenClaw-VM]$ openclaw devices approve <Request>
@@ -89,7 +91,7 @@ Then, in the OpenClaw VM, we get the link to the dashboard (with the access toke
 [OpenClaw-VM]$ openclaw dashboard --no-open
 ```
 
-Finally, you'll see a link in the shape of `http://127.0.0.1:18789/#token=<Token>` through which you can access the dashboard (provided you've established the tunnel like described above).
+Finally, you'll see a link in the shape of `http://127.0.0.1:18789/#token=<Token>` through which you can access the dashboard (provided you've established the tunnel as described above).
 
 ---
 
@@ -105,7 +107,7 @@ Run the command below to see your pending pairings:
 
 Take note of the `telegramUserId` that appears in the output because we will need it later on.
 
-Now, replace the `<Code>` and run the command below to approve the pairing:
+Now, replace `<Code>` with the pairing code from the output and run the command below to approve the pairing:
 
 ```shell
 [OpenClaw-VM]$ openclaw pairing approve <Code>

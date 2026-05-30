@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eux -o pipefail
+set -eu -o pipefail
 source ./config.sh
 
 PROJECT_IMAGES_PATH="${LIBVIRT_IMAGES_PATH}/${PROJECT_NAME}"
@@ -19,4 +19,4 @@ sudo rm -rf ${PROJECT_IMAGES_PATH}
 virsh net-update ${NETWORK_NAME} delete ip-dhcp-host "<host mac=\"${MAC_ADDRESS}\" ip=\"${IP_ADDRESS}\"/>" --live --config
 
 # Removes entry in the known_hosts file (if there is one)
-ssh-keygen -R 192.168.169.253 || true
+ssh-keygen -R ${IP_ADDRESS} || true
